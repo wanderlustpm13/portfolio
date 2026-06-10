@@ -15,23 +15,25 @@
 <body>
   <!-- Left rail (desktop only) -->
   <aside class="rail" aria-hidden="true">
-    <div class="rail__dots">
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-    </div>
+    <span class="rail__dot"></span>
+    <span class="rail__dot"></span>
+    <span class="rail__dot"></span>
     <div class="rail__label">MIN PENG 2026</div>
+    <span class="rail__dot"></span>
+    <span class="rail__dot"></span>
+    <span class="rail__dot"></span>
   </aside>
 
   <div class="page">
     <!-- Sticky top nav -->
     <header class="nav">
       <a class="nav__logo" href="#" aria-label="Home">
-        <img src="assets/logo.svg" alt="Min Peng logo" width="44" height="44" />
+        <img src="assets/logo%20with%20shadow.svg" alt="Min Peng logo" width="44" height="44" />
       </a>
       <nav class="nav__links" aria-label="Primary">
         <a href="#about">ABOUT</a>
-        <a href="https://www.linkedin.com" target="_blank" rel="noopener">LINKEDIN</a>
-        <a href="#" rel="noopener">RESUME</a>
+        <a href="https://www.linkedin.com/in/m1np3ng/" target="_blank" rel="noopener">LINKEDIN</a>
+        <a href="resume-mar2026.pdf" target="_blank" rel="noopener">RESUME</a>
       </nav>
     </header>
 
@@ -39,7 +41,7 @@
       <!-- Hero -->
       <section class="hero" id="about">
         <h1 class="hero__text">
-          I'm <em>Min Peng</em>, currently a product des&#9999;gner at <em>Netflix</em>, based in the San Francisco Bay Area. Previously at <em>Figma</em>, <em>TikTok</em>, and <em>Instagram</em>.
+          I'm <em>Min Peng</em>, currently a product des<span class="pencil">&#9999;</span>gner at <em>Netflix</em>, based in the S<span class="heart">&#10084;&#65038;</span>n Francisco Bay Area. Previously at <em>Figma</em>, <em>TikTok</em>, and <em>Instagram</em>.
         </h1>
       </section>
 
@@ -52,10 +54,11 @@
 
       <!-- Project rows -->
       <ul class="projects">
-        <li class="project" data-media-type="" data-media-src="" data-poster="">
+        <li class="project" data-media-type="video" data-media-src="assets/projects/tv-fm-uou-2.mp4" data-poster="">
           <span class="project__num">01</span>
           <h2 class="project__title">Upgrade on Us Offer</h2>
           <div class="project__meta"><span>NETFLIX</span><span>TV</span><span>2025</span></div>
+          <p class="project__desc" hidden>Led the design and launch of Netflix&rsquo;s first rejoin offer for former members, introducing a one-month free upgrade to a higher-tier plan. Significantly increased sign-up conversion, driving millions in incremental revenue.</p>
         </li>
         <li class="project" data-media-type="" data-media-src="" data-poster="">
           <span class="project__num">02</span>
@@ -99,8 +102,16 @@
   <!-- Click lightbox modal (works everywhere, incl. mobile/touch) -->
   <div class="lightbox" role="dialog" aria-modal="true" aria-label="Project preview" hidden>
     <button class="lightbox__close" aria-label="Close">&times;</button>
-    <div class="lightbox__stage"></div>
-    <div class="lightbox__caption"></div>
+    <div class="lightbox__content">
+      <div class="lightbox__stage"></div>
+      <div class="lightbox__info">
+        <div class="lightbox__head">
+          <span class="lightbox__title"></span>
+          <span class="lightbox__meta"></span>
+        </div>
+        <p class="lightbox__desc"></p>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>

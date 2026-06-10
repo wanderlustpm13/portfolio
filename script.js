@@ -6,18 +6,22 @@
   const previewInner = preview.querySelector(".preview__inner");
   const lightbox = document.querySelector(".lightbox");
   const lbStage = lightbox.querySelector(".lightbox__stage");
-  const lbCaption = lightbox.querySelector(".lightbox__caption");
+  const lbTitle = lightbox.querySelector(".lightbox__title");
+  const lbMeta = lightbox.querySelector(".lightbox__meta");
+  const lbDesc = lightbox.querySelector(".lightbox__desc");
   const lbClose = lightbox.querySelector(".lightbox__close");
 
   const canHover = window.matchMedia("(hover: hover)").matches;
 
   /* Read project data from data-* attributes */
   function read(el) {
+    const descEl = el.querySelector(".project__desc");
     return {
       title: el.querySelector(".project__title").textContent.trim(),
       meta: Array.from(el.querySelectorAll(".project__meta span"))
         .map((s) => s.textContent.trim())
         .join(" · "),
+      desc: descEl ? descEl.innerHTML.trim() : "",
       type: el.dataset.mediaType || "",
       src: el.dataset.mediaSrc || "",
       poster: el.dataset.poster || "",
@@ -36,6 +40,14 @@
       v.autoplay = true;
       if (opts.controls) v.controls = true;
       if (p.poster) v.poster = p.poster;
+      // Resume from a given timestamp (e.g. continuing from the hover preview)
+      if (opts.startTime) {
+        const seek = () => {
+          try { v.currentTime = opts.startTime; } catch (e) {}
+          v.play().catch(() => {});
+        };
+        v.addEventListener("loadedmetadata", seek, { once: true });
+      }
       return v;
     }
     if (p.type === "image" && p.src) {
@@ -106,10 +118,15 @@
   }
 
   /* ---------------- Lightbox ---------------- */
-  function openLightbox(p) {
+  function openLightbox(p, startTime) {
     stopMedia(lbStage);
-    lbStage.appendChild(buildMedia(p, { controls: p.type === "video" }));
-    lbCaption.textContent = p.title + "  —  " + p.meta;
+    lbStage.appendChild(
+      buildMedia(p, { controls: p.type === "video", startTime: startTime || 0 })
+    );
+    lbTitle.textContent = p.title;
+    lbMeta.textContent = p.meta;
+    lbDesc.innerHTML = p.desc;
+    lbDesc.hidden = !p.desc;
     lightbox.hidden = false;
     // force reflow so the transition runs
     void lightbox.offsetWidth;
@@ -123,7 +140,9 @@
     window.setTimeout(() => {
       lightbox.hidden = true;
       stopMedia(lbStage);
-      lbCaption.textContent = "";
+      lbTitle.textContent = "";
+      lbMeta.textContent = "";
+      lbDesc.innerHTML = "";
     }, 300);
   }
 
@@ -139,8 +158,12 @@
     }
 
     el.addEventListener("click", () => {
+      // Continue playback from wherever the hover preview is
+      let startTime = 0;
+      const pv = previewInner.querySelector("video");
+      if (pv && !isNaN(pv.currentTime)) startTime = pv.currentTime;
       hidePreview();
-      openLightbox(read(el));
+      openLightbox(read(el), startTime);
     });
 
     el.addEventListener("keydown", (e) => {
