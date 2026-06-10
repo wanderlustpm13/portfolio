@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Min Peng — Product Designer</title>
+  <meta name="description" content="Min Peng, product designer at Netflix, based in the San Francisco Bay Area. Previously at Figma, TikTok, and Instagram." />
+
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Left rail (desktop only) -->
+  <aside class="rail" aria-hidden="true">
+    <div class="rail__dots">
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+    <div class="rail__label">MIN PENG 2026</div>
+  </aside>
+
+  <div class="page">
+    <!-- Sticky top nav -->
+    <header class="nav">
+      <a class="nav__logo" href="#" aria-label="Home">
+        <img src="assets/logo.svg" alt="Min Peng logo" width="44" height="44" />
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#about">ABOUT</a>
+        <a href="https://www.linkedin.com" target="_blank" rel="noopener">LINKEDIN</a>
+        <a href="#" rel="noopener">RESUME</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Hero -->
+      <section class="hero" id="about">
+        <h1 class="hero__text">
+          I'm <em>Min Peng</em>, currently a product des&#9999;gner at <em>Netflix</em>, based in the San Francisco Bay Area. Previously at <em>Figma</em>, <em>TikTok</em>, and <em>Instagram</em>.
+        </h1>
+      </section>
+
+      <!-- Work catalog header -->
+      <div class="catalog-head">
+        <span class="catalog-head__left">WORK CATALOG</span>
+        <span class="catalog-head__center">2018 - NOW</span>
+        <span class="catalog-head__right">SORT: CHRONOLOGICAL</span>
+      </div>
+
+      <!-- Project rows -->
+      <ul class="projects">
+        <li class="project" data-media-type="" data-media-src="" data-poster="">
+          <span class="project__num">01</span>
+          <h2 class="project__title">Upgrade on Us Offer</h2>
+          <div class="project__meta"><span>NETFLIX</span><span>TV</span><span>2025</span></div>
+        </li>
+        <li class="project" data-media-type="" data-media-src="" data-poster="">
+          <span class="project__num">02</span>
+          <h2 class="project__title">Former Member Landing Page</h2>
+          <div class="project__meta"><span>NETFLIX</span><span>TV</span><span>2025</span></div>
+        </li>
+        <li class="project" data-media-type="" data-media-src="" data-poster="">
+          <span class="project__num">03</span>
+          <h2 class="project__title">FigJam Onboarding</h2>
+          <div class="project__meta"><span>FIGMA</span><span>WEB</span><span>2024</span></div>
+        </li>
+        <li class="project" data-media-type="" data-media-src="" data-poster="">
+          <span class="project__num">04</span>
+          <h2 class="project__title">2024 Config Announcement Modal</h2>
+          <div class="project__meta"><span>FIGMA</span><span>WEB</span><span>2024</span></div>
+        </li>
+        <li class="project" data-media-type="" data-media-src="" data-poster="">
+          <span class="project__num">05</span>
+          <h2 class="project__title">TikTok Shop Creator Center</h2>
+          <div class="project__meta"><span>TIKTOK</span><span>MOBILE</span><span>2023</span></div>
+        </li>
+        <li class="project" data-media-type="" data-media-src="" data-poster="">
+          <span class="project__num">06</span>
+          <h2 class="project__title">Instagram Cold Start Vision</h2>
+          <div class="project__meta"><span>INSTAGRAM</span><span>MOBILE</span><span>2021</span></div>
+        </li>
+        <li class="project" data-media-type="" data-media-src="" data-poster="">
+          <span class="project__num">07</span>
+          <h2 class="project__title">Instagram Reels Bonus</h2>
+          <div class="project__meta"><span>INSTAGRAM</span><span>MOBILE</span><span>2022</span></div>
+        </li>
+      </ul>
+    </main>
+  </div>
+
+  <!-- Cursor-following hover preview (desktop) -->
+  <div class="preview" aria-hidden="true">
+    <div class="preview__inner"></div>
+  </div>
+
+  <!-- Click lightbox modal (works everywhere, incl. mobile/touch) -->
+  <div class="lightbox" role="dialog" aria-modal="true" aria-label="Project preview" hidden>
+    <button class="lightbox__close" aria-label="Close">&times;</button>
+    <div class="lightbox__stage"></div>
+    <div class="lightbox__caption"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

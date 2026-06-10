@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# OS / editor
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Playwright / test artifacts (dev-only)
+playwright-report/
+test-results/
