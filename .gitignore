@@ -10,3 +10,13 @@ node_modules/
 # Playwright / test artifacts (dev-only)
 playwright-report/
 test-results/
+package.json
+package-lock.json
+
+# Original full-res strip photos (only the optimized strip/ + large/ derivatives are committed)
+assets/images/*.jpg
+assets/images/*.JPG
+assets/images/*.jpeg
+assets/images/*.JPEG
+assets/images/*.png
+assets/images/*.PNG

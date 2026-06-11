@@ -45,6 +45,13 @@
         </h1>
       </section>
 
+      <!-- Horizontally scrolling photo strip -->
+      <section class="strip" aria-label="Photo gallery">
+        <div class="strip__viewport">
+          <div class="strip__track" id="stripTrack"></div>
+        </div>
+      </section>
+
       <!-- Work catalog header -->
       <div class="catalog-head">
         <span class="catalog-head__left">WORK CATALOG</span>
@@ -102,6 +109,36 @@
           <div class="project__meta"><span>INSTAGRAM</span><span>MOBILE</span><span>2022</span></div>
           <p class="project__desc" hidden>Designed and launched Instagram Reels Bonus, a monetization program that pays creators based on Reels views. Enabled creators to more effectively monetize their content and drove a 20% increase in Reels production.</p>
         </li>
+        <li class="project" data-media-type="video" data-media-src="assets/projects/ig-stories-su-cropped.mp4" data-poster="">
+          <span class="project__num">09</span>
+          <h2 class="project__title">Graph Building in IG Stories</h2>
+          <div class="project__meta"><span>INSTAGRAM</span><span>MOBILE</span><span>2020</span></div>
+          <p class="project__desc" hidden>Designed and launched Instagram&rsquo;s first Suggested Users unit in Stories. Pioneered the format and introduced the iconic shuffle interaction that went on to inspire recommendation designs across the industry.</p>
+        </li>
+        <li class="project" data-media-type="image" data-media-src="assets/projects/ig-graph-management.png" data-poster="">
+          <span class="project__num">10</span>
+          <h2 class="project__title">Instagram Graph Management</h2>
+          <div class="project__meta"><span>INSTAGRAM</span><span>MOBILE</span><span>2019</span></div>
+          <p class="project__desc" hidden>Led Instagram&rsquo;s Graph Management initiative to make it easier for users to curate their social graph by managing who they follow and who follows them. As the first social platform to actively encourage unfollowing and removing followers, we aimed to foster more authentic relationships &mdash; ultimately increasing users&rsquo; likelihood to share and engage.<br><br>The work was featured in <a href="https://www.theverge.com/2020/2/6/21126641/instagram-new-feature-following-accounts-most-shown-in-feed-least-interacted" target="_blank" rel="noopener">The Verge&#8202;&#8599;</a>, <a href="https://techcrunch.com/2020/02/06/instagram-least-interacted-with/" target="_blank" rel="noopener">TechCrunch&#8202;&#8599;</a>, etc.</p>
+        </li>
+        <li class="project" data-media-type="video" data-media-src="assets/projects/ig-unfollow-chaining-cropped.mp4" data-poster="">
+          <span class="project__num">11</span>
+          <h2 class="project__title">Instagram Unfollow Chaining</h2>
+          <div class="project__meta"><span>INSTAGRAM</span><span>MOBILE</span><span>2019</span></div>
+          <p class="project__desc" hidden>Conceptualized, designed, and launched Unfollow Chaining at Instagram, enabling users to easily unfollow clusters of similar accounts surfaced at the moment of intent. Streamlined graph management, reduced effort, and improved feed relevance by helping users quickly move past outdated interest phases.</p>
+        </li>
+        <li class="project" data-media-type="image" data-media-src="assets/projects/ig-feed-su.png" data-poster="">
+          <span class="project__num">12</span>
+          <h2 class="project__title">Suggested Users in IG Feed</h2>
+          <div class="project__meta"><span>INSTAGRAM</span><span>MOBILE</span><span>2019</span></div>
+          <p class="project__desc" hidden>Designed and launched the Suggested Users unit in the Instagram home feed, helping users discover people and accounts they care about. This unit alone contributed to ~30% of all connections made on Instagram.</p>
+        </li>
+        <li class="project" data-media-type="image" data-media-src="assets/projects/samsung-health.png" data-poster="">
+          <span class="project__num">13</span>
+          <h2 class="project__title">Samsung HeartWise</h2>
+          <div class="project__meta"><span>SAMSUNG</span><span>MOBILE &amp; WATCH</span><span>2018</span></div>
+          <p class="project__desc" hidden>Designed and launched Samsung&rsquo;s first award-winning B2B healthcare service solution, Samsung HeartWise, to make cardiac rehab more affordable and scalable.<br><br>Won the <a href="https://www.red-dot.org/project/samsung-heartwise-26008" target="_blank" rel="noopener">Red Dot Design Award&#8202;&#8599;</a> in 2018. Featured in <a href="https://www.wsj.com/articles/kaiser-permanente-bets-on-smartwatches-to-lower-costs-11578565801" target="_blank" rel="noopener">WSJ&#8202;&#8599;</a>.</p>
+        </li>
       </ul>
     </main>
   </div>
@@ -124,6 +161,16 @@
         <p class="lightbox__desc"></p>
       </div>
     </div>
+  </div>
+
+  <!-- Photo strip lightbox -->
+  <div class="photolb" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+    <button class="photolb__close" aria-label="Close">&times;</button>
+    <button class="photolb__nav photolb__prev" aria-label="Previous photo">&#8249;</button>
+    <figure class="photolb__figure">
+      <img class="photolb__img" alt="" />
+    </figure>
+    <button class="photolb__nav photolb__next" aria-label="Next photo">&#8250;</button>
   </div>
 
   <script src="script.js"></script>

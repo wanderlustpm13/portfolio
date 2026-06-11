@@ -181,4 +181,130 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !lightbox.hidden) closeLightbox();
   });
+
+  /* ---------------- Photo strip marquee + lightbox ---------------- */
+  const stripTrack = document.getElementById("stripTrack");
+  const photolb = document.querySelector(".photolb");
+
+  if (stripTrack && photolb) {
+    const COUNT = 18;
+    const SPEED = 4; // px per second — slow, smooth
+    const stripViewport = stripTrack.parentElement;
+    const thumb = (n) => "assets/images/strip/image-strip-" + n + ".jpg";
+    const large = (n) => "assets/images/large/image-strip-" + n + ".jpg";
+
+    // Build one set of items in numeric order.
+    function buildSet(isClone) {
+      const frag = document.createDocumentFragment();
+      for (let n = 1; n <= COUNT; n++) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "strip__item";
+        btn.dataset.index = String(n);
+        if (isClone) {
+          btn.setAttribute("aria-hidden", "true");
+          btn.tabIndex = -1;
+        }
+        const img = document.createElement("img");
+        img.src = thumb(n);
+        img.alt = isClone ? "" : "Photo " + n;
+        img.decoding = "async";
+        img.draggable = false;
+        btn.appendChild(img);
+        frag.appendChild(btn);
+      }
+      return frag;
+    }
+
+    // Lay out the marquee so the track is always two identical halves, each at
+    // least as wide as the viewport. That keeps translateX(-50%) seamless AND
+    // gap-free on any screen width.
+    let lastHalves = 0;
+    function layoutStrip() {
+      stripTrack.innerHTML = "";
+      stripTrack.appendChild(buildSet(false));
+      const setWidth = stripTrack.scrollWidth || 1; // width of one 18-image set
+      const vw = stripViewport.clientWidth || window.innerWidth;
+      const setsPerHalf = Math.max(1, Math.ceil(vw / setWidth));
+      // We already have 1 set; add the rest to total 2 * setsPerHalf sets so the
+      // track is two identical halves, each at least one viewport wide.
+      for (let i = 1; i < setsPerHalf * 2; i++) stripTrack.appendChild(buildSet(true));
+      const halfWidth = setWidth * setsPerHalf;
+      // Override only the CSS animation duration to keep a constant scroll speed,
+      // then force a reflow so it restarts cleanly after the rebuild.
+      stripTrack.style.animationDuration = "0s";
+      void stripTrack.offsetWidth;
+      stripTrack.style.animationDuration = (halfWidth / SPEED).toFixed(1) + "s";
+      lastHalves = setsPerHalf;
+    }
+
+    // Build once images have a measurable width, then keep it responsive.
+    function whenReady(cb) {
+      const probe = new Image();
+      probe.onload = probe.onerror = cb;
+      probe.src = thumb(1);
+    }
+    whenReady(layoutStrip);
+
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        const vw = stripViewport.clientWidth || window.innerWidth;
+        // Re-layout only if the number of sets per half would change.
+        const setWidth = (stripTrack.scrollWidth || 1) / (lastHalves * 2 || 1);
+        if (Math.max(1, Math.ceil(vw / setWidth)) !== lastHalves) layoutStrip();
+      }, 200);
+    });
+
+    const plbImg = photolb.querySelector(".photolb__img");
+    const plbClose = photolb.querySelector(".photolb__close");
+    const plbPrev = photolb.querySelector(".photolb__prev");
+    const plbNext = photolb.querySelector(".photolb__next");
+    let current = 1;
+
+    function showPhoto(n) {
+      current = ((n - 1 + COUNT) % COUNT) + 1; // wrap 1..18
+      plbImg.src = large(current);
+      plbImg.alt = "Photo " + current;
+    }
+
+    function openPhoto(n) {
+      showPhoto(n);
+      photolb.hidden = false;
+      void photolb.offsetWidth;
+      photolb.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+      stripTrack.style.animationPlayState = "paused"; // freeze marquee behind the lightbox
+    }
+
+    function closePhoto() {
+      photolb.classList.remove("is-open");
+      document.body.style.overflow = "";
+      stripTrack.style.animationPlayState = "running";
+      window.setTimeout(() => {
+        photolb.hidden = true;
+        plbImg.removeAttribute("src");
+      }, 300);
+    }
+
+    stripTrack.addEventListener("click", (e) => {
+      const item = e.target.closest(".strip__item");
+      if (!item) return;
+      openPhoto(parseInt(item.dataset.index, 10));
+    });
+
+    plbClose.addEventListener("click", closePhoto);
+    plbPrev.addEventListener("click", () => showPhoto(current - 1));
+    plbNext.addEventListener("click", () => showPhoto(current + 1));
+    photolb.addEventListener("click", (e) => {
+      if (e.target === photolb) closePhoto();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (photolb.hidden) return;
+      if (e.key === "Escape") closePhoto();
+      else if (e.key === "ArrowLeft") showPhoto(current - 1);
+      else if (e.key === "ArrowRight") showPhoto(current + 1);
+    });
+  }
 })();

@@ -166,6 +166,60 @@ a { color: inherit; text-decoration: none; }
   transform: rotate(-60deg);
 }
 
+/* ---------------- Photo strip (marquee) ---------------- */
+.strip {
+  --strip-h: 200px;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+
+/* Full-bleed viewport: photos span the entire available width and clip at the
+   edges, with no side gaps (the marquee always fills the strip). */
+.strip__viewport {
+  height: var(--strip-h);
+  overflow: hidden;
+}
+
+.strip__track {
+  display: flex;
+  height: 100%;
+  width: max-content;
+  will-change: transform;
+  animation: strip-marquee 60s linear infinite;
+}
+
+/* Pause on hover, resume from the same position on leave */
+.strip__viewport:hover .strip__track { animation-play-state: paused; }
+
+.strip__item {
+  height: 100%;
+  flex: 0 0 auto;
+  margin-right: 2px; /* 2px spacing between photos; duplicated set keeps it seamless */
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: block;
+}
+
+.strip__item img {
+  height: 100%;
+  width: auto;
+  display: block;
+  object-fit: cover;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+@keyframes strip-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip__track { animation: none; }
+}
+
 /* ---------------- Work catalog header ---------------- */
 .catalog-head {
   position: sticky;
@@ -405,6 +459,14 @@ a { color: inherit; text-decoration: none; }
   color: var(--muted);
 }
 .lightbox__desc[hidden] { display: none; }
+.lightbox__desc a {
+  color: var(--white);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--white) 45%, transparent);
+  white-space: nowrap;
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+.lightbox__desc a:hover { border-bottom-color: var(--white); opacity: 0.85; }
 
 /* Larger screens: wider than before, but still narrower than the video */
 @media (min-width: 769px) {
@@ -428,6 +490,74 @@ a { color: inherit; text-decoration: none; }
 }
 .lightbox__close:hover { background: var(--line); }
 
+/* ---------------- Photo strip lightbox ---------------- */
+.photolb {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(8, 4, 90, 0.88);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+.photolb.is-open { opacity: 1; }
+.photolb[hidden] { display: none; }
+
+.photolb__figure {
+  margin: 0;
+  max-width: min(92vw, 1600px);
+  max-height: 88vh;
+  display: flex;
+}
+.photolb__img {
+  max-width: 100%;
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 2px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.photolb__close,
+.photolb__nav {
+  position: absolute;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--white);
+  cursor: pointer;
+  border-radius: 50%;
+  line-height: 1;
+  transition: background-color 0.25s var(--ease);
+}
+.photolb__close {
+  top: 16px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  font-size: 26px;
+}
+.photolb__nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  font-size: 30px;
+}
+.photolb__prev { left: 24px; }
+.photolb__next { right: 24px; }
+.photolb__close:hover,
+.photolb__nav:hover { background: rgba(255, 255, 255, 0.16); }
+
+@media (max-width: 768px) {
+  .photolb__nav { width: 42px; height: 42px; font-size: 24px; }
+  .photolb__prev { left: 10px; }
+  .photolb__next { right: 10px; }
+}
+
 /* ---------------- Responsive: tablet / mobile ---------------- */
 @media (max-width: 768px) {
   :root { --pad-x: 24px; --nav-h: 92px; }
@@ -442,6 +572,9 @@ a { color: inherit; text-decoration: none; }
 
   /* Hide the cursor-follow preview on touch / small screens; use lightbox instead */
   .preview { display: none; }
+
+  /* Scale the photo strip down proportionally on small screens */
+  .strip { --strip-h: 140px; }
 
   .catalog-head__center { left: auto; right: var(--pad-x); transform: none; }
   .catalog-head__right { display: none; }
