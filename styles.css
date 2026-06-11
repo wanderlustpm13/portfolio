@@ -397,14 +397,19 @@ a { color: inherit; text-decoration: none; }
 }
 .lightbox__desc {
   margin: 0;
-  max-width: 70ch;
+  max-width: 100%; /* small screens: same width as the video */
   font-family: var(--mono);
-  font-size: clamp(0.8rem, 0.82rem + 0.2vw, 1rem);
+  font-size: clamp(0.6875rem, 0.66rem + 0.15vw, 0.8125rem);
   line-height: 1.6;
   text-transform: none;
   color: var(--muted);
 }
 .lightbox__desc[hidden] { display: none; }
+
+/* Larger screens: wider than before, but still narrower than the video */
+@media (min-width: 769px) {
+  .lightbox__desc { max-width: min(78%, 1100px); }
+}
 
 .lightbox__close {
   position: absolute;
@@ -457,6 +462,13 @@ a { color: inherit; text-decoration: none; }
     align-items: flex-start;
     gap: 16px;
     text-align: left;
+  }
+
+  /* Lightbox: stack project name above the meta */
+  .lightbox__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 }
 
