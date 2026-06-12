@@ -13,6 +13,12 @@
 
   const canHover = window.matchMedia("(hover: hover)").matches;
 
+  /* Pause/resume the photo marquee (used by both lightboxes) */
+  function setMarquee(state) {
+    const track = document.getElementById("stripTrack");
+    if (track) track.style.animationPlayState = state;
+  }
+
   /* Read project data from data-* attributes */
   function read(el) {
     const descEl = el.querySelector(".project__desc");
@@ -132,11 +138,13 @@
     void lightbox.offsetWidth;
     lightbox.classList.add("is-open");
     document.body.style.overflow = "hidden";
+    setMarquee("paused"); // freeze the photo strip behind the lightbox
   }
 
   function closeLightbox() {
     lightbox.classList.remove("is-open");
     document.body.style.overflow = "";
+    setMarquee("running");
     window.setTimeout(() => {
       lightbox.hidden = true;
       stopMedia(lbStage);
@@ -305,6 +313,75 @@
       if (e.key === "Escape") closePhoto();
       else if (e.key === "ArrowLeft") showPhoto(current - 1);
       else if (e.key === "ArrowRight") showPhoto(current + 1);
+    });
+  }
+
+  /* ---------------- Custom cursor ---------------- */
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const cursor = document.querySelector(".cursor");
+
+  if (finePointer && cursor) {
+    document.documentElement.classList.add("has-custom-cursor");
+
+    // Elements that should grow the cursor
+    const HOVER_SELECTOR =
+      'a, button, [role="button"], input, textarea, select, label, ' +
+      ".project, .strip__item, .nav__logo, img";
+
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let curX = targetX;
+    let curY = targetY;
+    let active = false;
+    const EASE = 0.2; // spring-like follow factor
+
+    function render() {
+      curX += (targetX - curX) * EASE;
+      curY += (targetY - curY) * EASE;
+      // Update only the position vars so the CSS transform keeps its scale()
+      // (which transitions smoothly via the registered --cursor-scale property).
+      cursor.style.setProperty("--cursor-x", curX + "px");
+      cursor.style.setProperty("--cursor-y", curY + "px");
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+
+    document.addEventListener(
+      "mousemove",
+      (e) => {
+        targetX = e.clientX;
+        targetY = e.clientY;
+        if (!active) {
+          active = true;
+          // Snap on the first move so it doesn't fly in from the center
+          curX = targetX;
+          curY = targetY;
+          cursor.classList.add("is-active");
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener("mouseout", (e) => {
+      if (!e.relatedTarget && !e.toElement) cursor.classList.remove("is-active");
+    });
+    document.addEventListener("mouseover", () => cursor.classList.add("is-active"));
+
+    document.addEventListener("mousedown", () => cursor.classList.add("is-down"));
+    document.addEventListener("mouseup", () => cursor.classList.remove("is-down"));
+
+    // Hover state via delegation (works for dynamically added strip items)
+    document.addEventListener("mouseover", (e) => {
+      if (e.target.closest && e.target.closest(HOVER_SELECTOR)) {
+        cursor.classList.add("is-hover");
+      }
+    });
+    document.addEventListener("mouseout", (e) => {
+      const from = e.target.closest && e.target.closest(HOVER_SELECTOR);
+      const to = e.relatedTarget && e.relatedTarget.closest
+        ? e.relatedTarget.closest(HOVER_SELECTOR)
+        : null;
+      if (from && from !== to) cursor.classList.remove("is-hover");
     });
   }
 })();
