@@ -178,6 +178,8 @@ a { color: inherit; text-decoration: none; }
 /* Pencil: upright, tilted 30deg to the right, just taller than the "s" */
 .hero__text .pencil {
   display: inline-block;
+  font-variant-emoji: text;
+  font-style: normal;
   font-size: 0.9em;
   margin: 0 -0.12em 0 -0.04em;
   transform: rotate(-60deg);
@@ -241,11 +243,7 @@ a { color: inherit; text-decoration: none; }
   height: 100%;
   width: max-content;
   will-change: transform;
-  animation: strip-marquee 60s linear infinite;
 }
-
-/* Pause on hover, resume from the same position on leave */
-.strip__viewport:hover .strip__track { animation-play-state: paused; }
 
 .strip__item {
   height: 100%;
@@ -267,14 +265,6 @@ a { color: inherit; text-decoration: none; }
   user-select: none;
 }
 
-@keyframes strip-marquee {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .strip__track { animation: none; }
-}
 
 /* ---------------- Work catalog header ---------------- */
 .catalog-head {
@@ -513,6 +503,7 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.6;
   text-transform: none;
   color: var(--muted);
+  font-variant-emoji: text; /* keep ↗ etc. as text glyphs, not color emoji */
 }
 .lightbox__desc[hidden] { display: none; }
 .lightbox__desc a {
@@ -639,13 +630,18 @@ a { color: inherit; text-decoration: none; }
   }
   .currently__col:last-child { border-bottom: none; }
 
-  /* Stack the footer on small screens */
-  .footer {
+  /* Stack the footer on small screens with comfortable edge spacing.
+     Uses .page prefix so it beats the base .footer rule that is defined
+     later in the stylesheet. */
+  .page .footer {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    justify-content: center;
+    gap: 12px;
+    height: auto;
+    padding: 32px var(--side);
   }
-  .footer__credit { text-align: left; }
+  .page .footer__credit { text-align: left; }
 
   /* Scale the photo strip down proportionally on small screens */
   .strip { --strip-h: 140px; }

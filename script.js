@@ -16,7 +16,7 @@
   /* Pause/resume the photo marquee (used by both lightboxes) */
   function setMarquee(state) {
     const track = document.getElementById("stripTrack");
-    if (track) track.style.animationPlayState = state;
+    if (track) track.classList.toggle("strip--lb-paused", state === "paused");
   }
 
   /* Read project data from data-* attributes */
@@ -196,7 +196,7 @@
 
   if (stripTrack && photolb) {
     const COUNT = 18;
-    const SPEED = 4; // px per second — slow, smooth
+    const SPEED = 48; // px per second — steady, smooth
     const stripViewport = stripTrack.parentElement;
     const thumb = (n) => "assets/images/strip/image-strip-" + n + ".jpg";
     const large = (n) => "assets/images/large/image-strip-" + n + ".jpg";
@@ -224,26 +224,59 @@
       return frag;
     }
 
-    // Lay out the marquee so the track is always two identical halves, each at
-    // least as wide as the viewport. That keeps translateX(-50%) seamless AND
-    // gap-free on any screen width.
+    // Lay out the marquee as two identical halves, each at least one viewport
+    // wide, so the loop is seamless and gap-free. The track is then driven by a
+    // constant-speed rAF loop (NOT a CSS animation): long CSS animation
+    // durations render unreliably/slowly on mobile, which made the strip crawl.
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    let halfWidth = 0;
+    let offset = 0;
+
+    function measure() {
+      // Two identical halves → one loop length is half the full track width.
+      halfWidth = stripTrack.scrollWidth / 2 || 0;
+      if (halfWidth > 0) offset %= halfWidth;
+    }
+
     let lastHalves = 0;
     function layoutStrip() {
+      stripTrack.style.animation = "none"; // driven by rAF instead
       stripTrack.innerHTML = "";
       stripTrack.appendChild(buildSet(false));
       const setWidth = stripTrack.scrollWidth || 1; // width of one 18-image set
       const vw = stripViewport.clientWidth || window.innerWidth;
       const setsPerHalf = Math.max(1, Math.ceil(vw / setWidth));
-      // We already have 1 set; add the rest to total 2 * setsPerHalf sets so the
-      // track is two identical halves, each at least one viewport wide.
-      for (let i = 1; i < setsPerHalf * 2; i++) stripTrack.appendChild(buildSet(true));
-      const halfWidth = setWidth * setsPerHalf;
-      // Override only the CSS animation duration to keep a constant scroll speed,
-      // then force a reflow so it restarts cleanly after the rebuild.
-      stripTrack.style.animationDuration = "0s";
-      void stripTrack.offsetWidth;
-      stripTrack.style.animationDuration = (halfWidth / SPEED).toFixed(1) + "s";
+      // We already have 1 set; add the rest to total 2 * setsPerHalf sets.
+      for (let i = 1; i < setsPerHalf * 2; i++) {
+        stripTrack.appendChild(buildSet(true));
+      }
       lastHalves = setsPerHalf;
+      measure();
+    }
+
+    // Pause on hover or while a lightbox is open.
+    let hoverPaused = false;
+    stripViewport.addEventListener("mouseenter", () => (hoverPaused = true));
+    stripViewport.addEventListener("mouseleave", () => (hoverPaused = false));
+    function isPaused() {
+      return hoverPaused || stripTrack.classList.contains("strip--lb-paused");
+    }
+
+    // Constant-speed loop: advance SPEED px every second on every device.
+    let lastTime = 0;
+    function tick(now) {
+      if (!lastTime) lastTime = now;
+      let dt = (now - lastTime) / 1000;
+      lastTime = now;
+      if (dt > 0.1) dt = 0.1; // clamp after tab is backgrounded
+      if (!reduceMotion && halfWidth > 0 && !isPaused()) {
+        offset += SPEED * dt;
+        if (offset >= halfWidth) offset -= halfWidth;
+        stripTrack.style.transform = "translate3d(" + -offset + "px,0,0)";
+      }
+      requestAnimationFrame(tick);
     }
 
     // Build once images have a measurable width, then keep it responsive.
@@ -252,16 +285,26 @@
       probe.onload = probe.onerror = cb;
       probe.src = thumb(1);
     }
-    whenReady(layoutStrip);
+    whenReady(() => {
+      layoutStrip();
+      // Re-measure as the real images finish loading so the seam stays exact.
+      window.addEventListener("load", measure);
+      window.setTimeout(measure, 600);
+      window.setTimeout(measure, 1500);
+      if (!reduceMotion) requestAnimationFrame(tick);
+    });
 
     let resizeTimer = null;
     window.addEventListener("resize", () => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
         const vw = stripViewport.clientWidth || window.innerWidth;
-        // Re-layout only if the number of sets per half would change.
         const setWidth = (stripTrack.scrollWidth || 1) / (lastHalves * 2 || 1);
-        if (Math.max(1, Math.ceil(vw / setWidth)) !== lastHalves) layoutStrip();
+        if (Math.max(1, Math.ceil(vw / setWidth)) !== lastHalves) {
+          layoutStrip();
+        } else {
+          measure();
+        }
       }, 200);
     });
 
@@ -283,13 +326,13 @@
       void photolb.offsetWidth;
       photolb.classList.add("is-open");
       document.body.style.overflow = "hidden";
-      stripTrack.style.animationPlayState = "paused"; // freeze marquee behind the lightbox
+      stripTrack.classList.add("strip--lb-paused"); // freeze marquee behind the lightbox
     }
 
     function closePhoto() {
       photolb.classList.remove("is-open");
       document.body.style.overflow = "";
-      stripTrack.style.animationPlayState = "running";
+      stripTrack.classList.remove("strip--lb-paused");
       window.setTimeout(() => {
         photolb.hidden = true;
         plbImg.removeAttribute("src");
