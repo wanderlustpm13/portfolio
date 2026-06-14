@@ -384,4 +384,34 @@
       if (from && from !== to) cursor.classList.remove("is-hover");
     });
   }
+
+  /* ---------------- Parallax dot field ---------------- */
+  (function dotParallax() {
+    const field = document.querySelector(".dotfield");
+    if (!field) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const TILE = 24; // must match background-size in CSS
+    const FACTOR = 0.35; // drift speed relative to scroll
+    let ticking = false;
+
+    function update() {
+      // Wrap to the tile size so the loop is seamless and gap-free
+      const offset = ((window.scrollY * FACTOR) % TILE) - TILE;
+      field.style.transform = "translate3d(0," + offset + "px,0)";
+      ticking = false;
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+    update();
+  })();
 })();
