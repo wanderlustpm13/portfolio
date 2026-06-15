@@ -428,33 +428,104 @@
     });
   }
 
-  /* ---------------- Parallax dot field ---------------- */
-  (function dotParallax() {
-    const field = document.querySelector(".dotfield");
-    if (!field) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  /* ---------------- Animated dot field ----------------
+     A static grid of dots whose opacity is modulated by several large, soft
+     "blobs" that drift slowly and independently across the canvas. Dots far
+     from every blob fade to nothing. (Inspired by the Claude Cowork backdrop.) */
+  (function dotField() {
+    const canvas = document.querySelector("canvas.dotfield");
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext("2d");
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
-    const TILE = 24; // must match background-size in CSS
-    const FACTOR = 0.35; // drift speed relative to scroll
-    let ticking = false;
+    const SPACING = 26; // px between dots
+    const DOT_R = 1.35; // dot radius (css px)
+    const COLOR = "220,216,255"; // lavender (--muted)
+    const PEAK = 0.42; // peak opacity contributed by one blob
+    const MAX_ALPHA = 0.62; // clamp when blobs overlap
+    const MIN_ALPHA = 0.02; // below this a dot isn't drawn
 
-    function update() {
-      // Wrap to the tile size so the loop is seamless and gap-free
-      const offset = ((window.scrollY * FACTOR) % TILE) - TILE;
-      field.style.transform = "translate3d(0," + offset + "px,0)";
-      ticking = false;
+    // Blobs: each drifts on its own slow Lissajous-style path so the motion
+    // never visibly repeats. Positions/amplitudes are fractions of the viewport.
+    const BLOBS = [
+      { bx: 0.22, by: 0.18, ax: 0.22, ay: 0.18, fx: 0.078, fy: 0.102, px: 0.0, py: 1.3 },
+      { bx: 0.78, by: 0.3, ax: 0.2, ay: 0.22, fx: 0.066, fy: 0.09, px: 2.1, py: 0.4 },
+      { bx: 0.5, by: 0.72, ax: 0.26, ay: 0.2, fx: 0.054, fy: 0.072, px: 4.0, py: 2.6 },
+      { bx: 0.15, by: 0.85, ax: 0.21, ay: 0.17, fx: 0.084, fy: 0.06, px: 1.0, py: 3.4 },
+    ];
+
+    let dpr = 1;
+    let w = 0;
+    let h = 0;
+    let sigma = 1; // blob radius
+    let twoSigmaSq = 1;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sigma = Math.min(w, h) * 0.26; // large, soft blobs
+      twoSigmaSq = 2 * sigma * sigma;
     }
 
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (!ticking) {
-          ticking = true;
-          requestAnimationFrame(update);
+    function render(t) {
+      ctx.clearRect(0, 0, w, h);
+      // Resolve current blob centers in px.
+      const cx = [];
+      const cy = [];
+      for (let b = 0; b < BLOBS.length; b++) {
+        const o = BLOBS[b];
+        cx[b] = (o.bx + o.ax * Math.sin(t * o.fx + o.px)) * w;
+        cy[b] = (o.by + o.ay * Math.sin(t * o.fy + o.py)) * h;
+      }
+      ctx.fillStyle = "rgba(" + COLOR + ",1)";
+      for (let y = SPACING / 2; y < h; y += SPACING) {
+        for (let x = SPACING / 2; x < w; x += SPACING) {
+          let a = 0;
+          for (let b = 0; b < BLOBS.length; b++) {
+            const dx = x - cx[b];
+            const dy = y - cy[b];
+            a += PEAK * Math.exp(-(dx * dx + dy * dy) / twoSigmaSq);
+          }
+          if (a < MIN_ALPHA) continue;
+          if (a > MAX_ALPHA) a = MAX_ALPHA;
+          ctx.globalAlpha = a;
+          ctx.beginPath();
+          ctx.arc(x, y, DOT_R, 0, 6.283185307179586);
+          ctx.fill();
         }
-      },
-      { passive: true }
-    );
-    update();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        resize();
+        if (reduceMotion) render(0);
+      }, 150);
+    });
+
+    resize();
+    if (reduceMotion) {
+      render(8000); // a pleasant static snapshot
+      return;
+    }
+    let lastDraw = 0;
+    function loop(now) {
+      // ~30fps is smooth for this slow drift and lighter on the battery
+      if (now - lastDraw >= 33) {
+        lastDraw = now;
+        render(now / 1000);
+      }
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
   })();
 })();

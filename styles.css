@@ -40,22 +40,15 @@ body {
   overflow-x: hidden;
 }
 
-/* Parallax dot field behind all content (drifts opposite to scroll) */
+/* Animated dot field behind all content (drawn on a canvas) */
 .dotfield {
   position: fixed;
-  inset: -48px 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: -1;
   pointer-events: none;
-  background-image: radial-gradient(
-    rgba(220, 216, 255, 0.22) 1.4px,
-    transparent 1.6px
-  );
-  background-size: 24px 24px;
-  will-change: transform;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dotfield { transform: none !important; }
+  display: block;
 }
 
 a { color: inherit; text-decoration: none; }
