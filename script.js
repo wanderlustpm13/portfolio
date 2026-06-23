@@ -376,11 +376,17 @@
     let curX = targetX;
     let curY = targetY;
     let active = false;
-    const EASE = 0.2; // spring-like follow factor
+    // Follow factor expressed per 60fps frame; converted to be frame-rate
+    // independent below so the feel is identical on 60Hz and 120Hz displays.
+    const EASE = 0.9;
+    let lastT = performance.now();
 
-    function render() {
-      curX += (targetX - curX) * EASE;
-      curY += (targetY - curY) * EASE;
+    function render(now) {
+      const dt = Math.min((now - lastT) / 16.667, 4); // frames elapsed (capped)
+      lastT = now;
+      const f = 1 - Math.pow(1 - EASE, dt);
+      curX += (targetX - curX) * f;
+      curY += (targetY - curY) * f;
       // Update only the position vars so the CSS transform keeps its scale()
       // (which transitions smoothly via the registered --cursor-scale property).
       cursor.style.setProperty("--cursor-x", curX + "px");
