@@ -160,7 +160,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* Keep a name glued to its trailing punctuation so the comma/period never
-   wraps to its own line (also survives SplitText word-splitting). */
+   wraps to its own line. */
 .hero__text .nobreak {
   white-space: nowrap;
 }
