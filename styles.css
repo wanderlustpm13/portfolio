@@ -20,7 +20,7 @@
   --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
 
   /* Fluid type: scales smoothly between mobile (~402px) and desktop (~1440px) */
-  --fs-hero: clamp(2.875rem, 2.3rem + 2.4vw, 4.25rem);  /* 46px -> 68px */
+  --fs-hero: clamp(3.25rem, 2.57rem + 2.7vw, 5rem);     /* 52px -> 80px */
   --fs-title: clamp(2rem, 1.61rem + 1.54vw, 3rem);      /* 32px -> 48px */
 
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
