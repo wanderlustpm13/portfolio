@@ -13,6 +13,10 @@ test-results/
 package.json
 package-lock.json
 
+# Original uncompressed project videos (only the optimized .mp4 derivatives are committed)
+assets/projects/*.mov
+assets/projects/*.MOV
+
 # Original full-res strip photos (only the optimized strip/ + large/ derivatives are committed)
 assets/images/*.jpg
 assets/images/*.JPG
