@@ -123,6 +123,28 @@
     }, 300);
   }
 
+  /* "Click to view details" tip, shown after a prolonged hover on a row */
+  const HOVER_TIP_DELAY = 5000; // ms of continuous hover before the tip appears
+  let tipTimer = null;
+  const previewTip = document.createElement("div");
+  previewTip.className = "preview__tip";
+  previewTip.textContent = "Click to view details";
+  preview.appendChild(previewTip);
+
+  function scheduleTip() {
+    clearTip();
+    tipTimer = window.setTimeout(() => {
+      preview.classList.add("show-tip");
+    }, HOVER_TIP_DELAY);
+  }
+  function clearTip() {
+    if (tipTimer) {
+      window.clearTimeout(tipTimer);
+      tipTimer = null;
+    }
+    preview.classList.remove("show-tip");
+  }
+
   /* ---------------- Lightbox ---------------- */
   function openLightbox(p, startTime) {
     stopMedia(lbStage);
@@ -160,9 +182,15 @@
     el.setAttribute("role", "button");
 
     if (canHover) {
-      el.addEventListener("mouseenter", (e) => showPreview(read(el), e));
+      el.addEventListener("mouseenter", (e) => {
+        showPreview(read(el), e);
+        scheduleTip();
+      });
       el.addEventListener("mousemove", onMove);
-      el.addEventListener("mouseleave", hidePreview);
+      el.addEventListener("mouseleave", () => {
+        hidePreview();
+        clearTip();
+      });
     }
 
     el.addEventListener("click", () => {
@@ -170,6 +198,7 @@
       let startTime = 0;
       const pv = previewInner.querySelector("video");
       if (pv && !isNaN(pv.currentTime)) startTime = pv.currentTime;
+      clearTip();
       hidePreview();
       openLightbox(read(el), startTime);
     });
