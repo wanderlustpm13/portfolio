@@ -478,8 +478,8 @@
     const SPACING = 26; // px between dots
     const DOT_R = 1.35; // dot radius (css px)
     const COLOR = "220,216,255"; // lavender (--muted)
-    const PEAK = 0.42; // peak opacity contributed by one blob
-    const MAX_ALPHA = 0.62; // clamp when blobs overlap
+    const PEAK = 0.3; // peak opacity contributed by one blob
+    const MAX_ALPHA = 0.44; // clamp when blobs overlap
     const MIN_ALPHA = 0.02; // below this a dot isn't drawn
 
     // Blobs: each drifts on its own slow Lissajous-style path so the motion
